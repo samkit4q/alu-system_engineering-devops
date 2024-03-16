@@ -14,9 +14,6 @@ file_line { 'Declare identity file':
 file_line { 'Configure SSH client settings':
   ensure => present,
   path   => '/etc/ssh/ssh_config',
-  line   => [
-    'IdentityFile ~/.ssh/school',
-    'PasswordAuthentication no',
-  ],
+  line   => '    IdentityFile ~/.ssh/school',
 }
 
