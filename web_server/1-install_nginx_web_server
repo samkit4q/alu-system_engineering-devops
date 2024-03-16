@@ -1,21 +1,9 @@
 #!/usr/bin/env bash
-# This script installs nginx web server and configures it to listen on port 80
-# It also sets up nginx to return a page containing "Holberton School" when queried at the root
+# Bash script that configures a new Ubuntu machine nginx
 
-# Update package index and install nginx
-sudo apt-get update -y
-sudo apt-get install -y nginx
-
-# Make sure nginx is running
-sudo service nginx start
-
-# Configure nginx to listen on port 80 and return a page with "Holberton School" at the root
-sudo bash -c 'echo "Holberton School for the win!" > /usr/share/nginx/html/index.html'
-
-# Check if nginx is running on port 80
-if sudo netstat -tuln | grep ':80\s'; then
-    echo "Nginx is listening on port 80"
-else
-    echo "Nginx is not listening on port 80"
-fi
+apt-get -y update
+apt-get -y install nginx
+ufw allow  'Nginx HTTP'
+echo "Holberton School" > /var/www/html/index.html
+service nginx restart
 
