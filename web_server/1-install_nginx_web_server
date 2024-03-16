@@ -1,32 +1,30 @@
 #!/usr/bin/env bash
-# Configures a new ubuntu machine by installing
-# Nginx where it should be listening on port 80
-# Serve a page that would return a Hello World string
-#
 
-echo -e "Updating and installing Nginx.\n"
-sudo apt-get update -y -qq && \
-	 sudo apt-get install nginx -y
+# Update package list and install Nginx
+apt-get update -y
+apt-get install nginx -y
 
-echo -e "\nSetting up some minor stuff.\n"
+# Configure Nginx to listen on port 80
+sed -i 's/^\(.*listen\s*\)80/\180/' /etc/nginx/sites-available/default
 
-# starting nginx service
-sudo service nginx start
+# Restart Nginx
+service nginx restart
 
-# allowing nginx on firewall
-sudo ufw allow 'Nginx HTTP'
+# Check if Nginx is running
+if systemctl is-active --quiet nginx; then
+    echo "Nginx is running."
+else
+    echo "Failed to start Nginx."
+    exit 1
+fi
 
-# Give the user ownership to website files for easy editing
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www
+# Create a temporary HTML file
+echo "Holberton School for the win!" > /var/www/html/index.html
 
-# Backup default index
-cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
-
-# Creating new index
-echo -e "Holberton School!" | dd status=none of=/var/www/html/index.nginx-debian.html
-
-# Restarting nginx
-sudo service nginx restart
-
-echo -e "\nCompleted. ✅\n"
+# Test if Nginx serves the correct page
+if curl -s localhost | grep -q "Holberton School"; then
+    echo "Nginx is serving the correct page."
+else
+    echo "Nginx is not serving the correct page."
+    exit 1
+fi
