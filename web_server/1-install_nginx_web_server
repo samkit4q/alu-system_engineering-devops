@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Bash script to install and configure Nginx web server
+# It installs Nginx, configures it to listen on port 80,
+# and ensures it serves a page containing "Holberton School" at its root.
+
 # Update package list and install Nginx
 apt-get update -y
 apt-get install nginx -y
