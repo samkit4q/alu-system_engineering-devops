@@ -1,19 +1,14 @@
-# Puppet script to configure SSH client settings
-file_line { 'Turn off passwd auth':
-  ensure => present,
-  path   => '/etc/ssh/sshd_config',
-  line   => 'PasswordAuthentication no',
-}
+#!/usr/bin/env bash
+# using puppet to make changes to our configuration file
 
-file_line { 'Declare identity file':
-  ensure => present,
-  path   => '/home/ubuntu/.ssh/config',
-  line   => 'IdentityFile ~/.ssh/school',
-}
+file { 'ect/ssh/ssh_config':
+         ensure => present,
 
-file_line { 'Configure SSH client settings':
-  ensure => present,
-  path   => '/etc/ssh/ssh_config',
-  line   => 'IdentityFile ~/.ssh/school',
-  match  => '^#?\s*IdentityFile\s+.*',
+content =>"
+
+        #SSH client configuration
+        host*
+        Identiryfile ~/.ssh/school
+        passwordauthentication no
+
 }
