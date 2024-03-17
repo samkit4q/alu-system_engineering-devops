@@ -3,10 +3,10 @@
 
 sudo apt-get update
 sudo apt-get install nginx
-sudo ufw "nginx HTTP"
+sudo ufw allow "nginx HTTP"
 
 echo "Holberton School" | sudo tee /var/www/html/index.html
-# testing nginx configuration
+# testing nginx configuratioin
 sudo nginx -t
 
 sudo service nginx reload
