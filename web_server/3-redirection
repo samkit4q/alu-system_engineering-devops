@@ -1,20 +1,38 @@
 #!/usr/bin/env bash
 
+# Bash script to configure NGINX and set up a redirection
+
 # Update package lists
 sudo apt-get update
 
 # Install NGINX
 sudo apt-get install -y nginx
 
-# Create index.html file with "Holberton School" content
+# Create index.html file with specific content
 echo "Holberton School" | sudo tee /var/www/html/index.html >/dev/null
 
-# Define the string for replacement
-string_for_replacement="server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/samkit4q permanent;"
+# Define the redirection configuration
+redirection_config="server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-# Perform the substitution using sed
-sudo sed -i "s#server_name _;#$string_for_replacement#" /etc/nginx/sites-enabled/default
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location /redirect_me {
+        return 301 https://github.com/samkit4q;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}"
+
+# Write the redirection configuration to NGINX configuration file
+echo "$redirection_config" | sudo tee /etc/nginx/sites-available/default >/dev/null
 
 # Restart NGINX to apply changes
-sudo service nginx restart
+sudo systemctl restart nginx
 
