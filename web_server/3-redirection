@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
-# performing a 301 moved permanently
 
+# Update package lists
 sudo apt-get update
+
+# Install NGINX
 sudo apt-get install -y nginx
 
-echo "Holberton School" | sudo tee /var/www/html/index.html
+# Create index.html file with "Holberton School" content
+echo "Holberton School" | sudo tee /var/www/html/index.html >/dev/null
 
+# Define the string for replacement
 string_for_replacement="server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/samkit4q permanent;"
 
-sudo sed -i "server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+# Perform the substitution using sed
+sudo sed -i "s#server_name _;#$string_for_replacement#" /etc/nginx/sites-enabled/default
 
+# Restart NGINX to apply changes
 sudo service nginx restart
+
