@@ -1,31 +1,25 @@
 #!/usr/bin/env bash
-#config nginx
-sudo apt remove --purge nginx nginx-full nginx-common -y
-sudo apt update
-sudo apt install nginx -y
-sudo touch /var/www/html/index.html
+# Configure custom Nginx response header to track HTTP requests to web servers
+
+# Updateing packages
+sudo apt-get update
+sudo apt-get install -y nginx
 
 echo "Holberton School" | sudo tee /var/www/html/index.html
-sudo touch /var/www/html/error404.html
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/error404.html
 
-printf %s 'server {
-        listen 80 default_server;
-	        listen [::]:80 default_server;
+new_string="server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/samkit4q permanent;"
 
-        root /var/www/html;
+sudo sed -i "s/server_name _;/$new_string/" /etc/nginx/sites-enabled/default
 
-        index index.html;
-	        error_page 404 /error404.html;
+# Creating a custom erro page
 
-        server_name _;
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
 
-        add_header X-Served-By $hostname;
+# Custom HTTP response header
+sudo sed -i "server_name _;/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
 
-        location /redirect_me {
-	           return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4/;
-		           }
-			   }
-			   ' | sudo tee /etc/nginx/sites-available/default
+# Test for syntax error
+sudo nginx -t
 
+# Restart nginx
 sudo service nginx restart
