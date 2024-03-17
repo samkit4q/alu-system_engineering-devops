@@ -1,38 +1,30 @@
 #!/usr/bin/env bash
 
-# Bash script to configure NGINX and set up a redirection
+# Configuring Nginx server so that /redirect_me is redirecting to another page.
 
-# Update package lists
-sudo apt-get update
+# Update package repositories and install Nginx
+sudo apt-get -y update
+sudo apt-get -y install nginx
 
-# Install NGINX
-sudo apt-get install -y nginx
+# Create a simple index.html file
+echo "Holberton School" | sudo tee /var/www/html/index.html > /dev/null
 
-# Create index.html file with specific content
-echo "Holberton School" | sudo tee /var/www/html/index.html >/dev/null
+# Define the replacement string for Nginx config
+replacement="server_name _;\\
+    rewrite ^/redirect_me https://github.com/samkit4q/ permanent;"
 
-# Define the redirection configuration
-redirection_config="server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# Apply the replacement in the Nginx config file
+sudo sed -i "s|server_name _;|$replacement|" /etc/nginx/sites-available/default
 
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
+# Test Nginx configuration syntax
+sudo nginx -t
 
-    server_name _;
+# Restart Nginx to apply changes
+sudo service nginx restart
 
-    location /redirect_me {
-        return 301 https://github.com/samkit4q;
-    }
+# Send a request to /redirect_me and capture the HTTP status code
+status_code=$(curl -s -o /dev/null -w "%{http_code}" http://samkit4q/redirect_me)
 
-    location / {
-        try_files $uri $uri/ =404;
-    }
-}"
-
-# Write the redirection configuration to NGINX configuration file
-echo "$redirection_config" | sudo tee /etc/nginx/sites-available/default >/dev/null
-
-# Restart NGINX to apply changes
-sudo systemctl restart nginx
+# Print the status code
+echo $status_code
 
