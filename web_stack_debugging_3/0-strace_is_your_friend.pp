@@ -1,4 +1,15 @@
-#!/usr/bin/env bash
-#  script should run the whoami command under the user
+# Puppet manifest to fix Apache returning a 500 error
 
-sudo -u "$1" whoami
+# Define an exec resource to restart Apache service
+exec { 'restart-apache':
+  command     => '/usr/sbin/service apache2 restart',
+  refreshonly => true,
+}
+
+# Define a file resource to update Apache configuration
+file { '/etc/apache2/apache2.conf':
+  ensure  => file,
+  content => template('apache2/apache2.conf.erb'),
+  notify  => Exec['restart-apache'],
+}
+
